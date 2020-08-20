@@ -1,10 +1,15 @@
+'use strict'
+
+
+
 var express = require('express');
 var router = express.Router();
-var phonebook = require('../models/phonebook');
+var User = require('../models/user');
+
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
-  phonebook.find({}).then((data) => {
+  User.find({}).then((data) => {
     res.json(data)
   }).catch((err) => {
     res.json({ err });
@@ -14,7 +19,7 @@ router.get('/', function (req, res, next) {
 
 
 router.post('/', function (req, res, next) {
-  phonebook.create({
+  User.create({
     name: req.body.name, 
     phone: req.body.phone
   }).then((data) => {

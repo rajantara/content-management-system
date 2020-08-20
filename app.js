@@ -6,7 +6,7 @@ var logger = require('morgan');
 const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
-var phonebookRouter = require('./routes/phonebooks');
+var usersRouter = require('./routes/users');
 
 // router to connect mongoose
 mongoose.connect('mongodb://localhost/mycms', {useNewUrlParser: true});
@@ -22,6 +22,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/api/phonebooks',  phonebookRouter);
+app.use('/api/users', usersRouter);
 
 module.exports = app;
