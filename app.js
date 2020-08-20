@@ -13,7 +13,15 @@ mongoose.connect('mongodb://localhost/mycms', {useNewUrlParser: true});
 
 
 
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log('koneksi ampuh');
+});
+
+
 var app = express();
+
 
 app.use(logger('dev'));
 app.use(express.json());
