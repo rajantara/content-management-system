@@ -9,7 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var dataRouter = require('./routes/datas');
 var dataDateRouter = require('./routes/datadates');
-//var mapRouter = require('./routes/maps');
+var mapRouter = require('./routes/maps');
 
 
 
@@ -38,6 +38,6 @@ app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/data', dataRouter);
 app.use('/api/datadate', dataDateRouter);
-// app.use('/api/map', mapRouter);
+app.use('/api/maps', mapRouter);
 
 module.exports = app;
