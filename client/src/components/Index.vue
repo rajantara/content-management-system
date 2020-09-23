@@ -1,20 +1,16 @@
 <template>
   <div>
-    
-    <Navbar :isLoggedIn="isLoggedIn"></Navbar>
-
-    <Jumbotron></Jumbotron>
     <!-- START OF SELECTION FEATURE(LINE,PIE,BAR,MAPS) -->
     <div class="container-card container">
       <div class="card mb-3 justify-content-center w-75">
-        <div class="card-header" >Welcome to Dashboard</div>
+        <div class="card-header" >𝒲𝑒𝓁𝒸𝑜𝓂𝑒 𝓉𝑜 𝒟𝒶𝓈𝒽𝒷𝑜𝒶𝓇𝒹</div>
         <div class="card-body text-dark">
           <div class="d-flex flex-column bd-highlight">
             <router-link to="/line" class="childTomato p-1 bd-highlight">
               <i class="fas fa-signal fa-sm"></i>
               <br />
               <span>
-                <strong>Line</strong>
+                <strong class="btn-grad">𝓛𝓲𝓷𝓮</strong>
               </span>
             </router-link>
 
@@ -22,7 +18,7 @@
               <i class="fas fa-chart-pie fa-sm"></i>
               <br />
               <span>
-                <strong>Pie</strong>
+                <strong class="btn-pie">𝓟𝓲𝓮</strong>
               </span>
             </router-link>
 
@@ -30,7 +26,7 @@
               <i class="far fa-chart-bar fa-sm"></i>
               <br />
               <span>
-                <strong>Bar</strong>
+                <strong class="btn-bar">𝓑𝓪𝓻</strong>
               </span>
             </router-link>
 
@@ -38,13 +34,13 @@
               <i class="fas fa-map-marked-alt fa-sm"></i>
               <br />
               <span>
-                <strong>Maps</strong>
+                <strong class="btn-map">𝓜𝓪𝓹𝓼</strong>
               </span>
             </router-link>
           </div>
 
           <div class="d-flex flex-row mt-5 bd-highlight justify-content-center text-black-50">
-            <router-link to="/Login" class="btn-login p-2 w-25">Login</router-link>
+            <router-link to="/Login" class="btn-login p-2 w-25">𝓛𝓸𝓰𝓲𝓷</router-link>
           </div>
         </div>
       </div>
@@ -174,4 +170,107 @@ a {
 a:hover {
   color: white;
 }
+
+
+
+/* button scripts */
+
+.btn-grad {
+  background-image: linear-gradient(to right, #5f2c82 0%, #49a09d  51%, #5f2c82  100%)
+}
+
+.btn-grad { 
+margin: 10px;
+padding: 2px 2px;
+text-align: center;
+text-transform: uppercase;
+transition: 0.5s;
+background-size: 200% auto;
+color: white;            
+box-shadow: 0 0 20px #eee;
+border-radius: 10px;
+display: block;
+}
+
+.btn-grad:hover {
+background-position: right center; /* change the direction of the change here */
+color: #fff;
+text-decoration: none;
+}
+
+
+.btn-pie {
+  background-image: linear-gradient(to right, #403A3E 0%, #BE5869  51%, #403A3E  100%)
+}
+
+.btn-pie { 
+margin: 10px;
+padding: 2px 2px;
+text-align: center;
+text-transform: uppercase;
+transition: 0.5s;
+background-size: 200% auto;
+color: white;            
+box-shadow: 0 0 20px #eee;
+border-radius: 10px;
+display: block;
+}
+           
+.btn-pie:hover {
+background-position: right center; /* change the direction of the change here */
+color: #fff;
+text-decoration: none;
+}
+
+
+.btn-bar {
+  background-image: linear-gradient(to right, #3a6186 0%, #89253e  51%, #3a6186  100%)
+}
+
+.btn-bar { 
+margin: 10px;
+padding: 2px 2px;
+text-align: center;
+text-transform: uppercase;
+transition: 0.5s;
+background-size: 200% auto;
+color: white;            
+box-shadow: 0 0 20px #eee;
+border-radius: 10px;
+display: block;
+}
+           
+.btn-bar:hover {
+background-position: right center; /* change the direction of the change here */
+color: #fff;
+text-decoration: none;
+}
+
+.btn-map {
+  background-image: linear-gradient(to right, #73C8A9 0%, #373B44  51%, #73C8A9  100%)
+}
+
+.btn-map { 
+margin: 10px;
+padding: 2px 2px;
+text-align: center;
+text-transform: uppercase;
+transition: 0.5s;
+background-size: 200% auto;
+color: white;            
+box-shadow: 0 0 20px #eee;
+border-radius: 10px;
+display: block;
+}
+           
+.btn-map:hover {
+background-position: right center; /* change the direction of the change here */
+color: #fff;
+text-decoration: none;
+}
+        
+         
 </style>
+
+
+         
