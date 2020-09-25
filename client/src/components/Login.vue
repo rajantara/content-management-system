@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Jumbotron></Jumbotron>
 
     <!-- START OF SELECTION FEATURE(LINE,PIE,BAR,MAPS) -->
     <div class="container-card container">
@@ -50,9 +51,13 @@
 </template>
 
 <script>
+import Jumbotron from "./Jumbotron"
 
 export default {
   name: "login",
+   components: {
+    Jumbotron,
+  },
   
   data() {
     return {

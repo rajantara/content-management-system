@@ -47,12 +47,8 @@
           </div>
         </li>
       </ul>
-      <button
-        type="submit"
-        class="btn-login p-2 mb-2"
-        v-if="isLoggedIn"
-        @click="handleLogout"
-      >Logout</button>
+      <router-link type="submit" v-if="isLoggedIn"
+        @click="handleLogout" to="/" class="btn-login p-2 mb-2">Logout</router-link>
     </div>
   </nav>
 </template>

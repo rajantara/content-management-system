@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :isLoggedIn="isLoggedIn"></Navbar>
+
     <Jumbotron></Jumbotron>
     <div class="container-card container">
       <div class="card mb-3">
@@ -62,12 +62,11 @@
 </template>
 
 <script>
-import Navbar from "./Navbar";
 import Jumbotron from "./Jumbotron"
 export default {
   name: "signup",
   components: {
-    Navbar,Jumbotron
+    Jumbotron
   },
   data() {
     return {
