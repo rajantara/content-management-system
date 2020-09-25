@@ -1,15 +1,106 @@
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 
-const fs = require('fs');
-const path = require('path');
-const DataDate = require('../models/DataDate');
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/cmsDb', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
 
-let data = JSON.parse(
-    fs.readFileSync(path.join(__dirname, "data.json"), "utf-8")
-);
+import Index from '../components/Index';
+import Login from '../components/Login';
+import Line from '../components/Line';
+import Pie from '../components/Pie';
+import Map from '../components/Map';
+import Bar from '../components/Bar';
+import Home from '../components/Home';
+import Data from '../components/Data';
+import DateData from '../components/Datedata';
+import Maps from '../components/Maps';
 
-DataDate.insertMany(data, (err,result) => {
-    if (err) throw err;
-    console.log(`${result.length} data has been imported`)
+
+
+
+Vue.use(VueRouter);
+
+
+const router = new VueRouter({
+    mode: 'history',
+    routes: [
+        {
+            path: '/',
+            name: 'Index',
+            component: Index
+
+        },
+        {
+            path: '/login',
+            name: 'Login',
+            component: Login
+        },
+        {
+            path: '/line',
+            name: 'Line',
+            component: Line
+        },
+        {
+            path: '/pie',
+            name: 'Pie',
+            component: Pie
+        },
+        {
+            path: '/map',
+            name: 'Map',
+            component: Map
+        },
+        {
+            path: '/bar',
+            name: 'Bar',
+            component: Bar
+        },
+        {
+            path: '/home',
+            name: 'Home',
+            component: Home,
+            meta: {
+                isLoggedin: true
+            }
+        },
+        {
+            path: '/data',
+            name: 'Data',
+            component: Data,
+            meta: {
+                isLoggedin: true
+            }
+        },
+        {
+            path: '/datedata',
+            name: 'DateData',
+            component: DateData,
+            meta: {
+                isLoggedin: true
+            }
+        },
+        {
+            path: '/maps',
+            name: 'Maps',
+            component: Maps,
+            meta: {
+                isLoggedin: true
+            }
+        }
+    ]
+
+
+});
+
+router.beforeEach((to, from, next) => {
+    if (to.matched.some(record => record.meta.isLoggedin)) {
+        if (!localStorage.getItem('token')) {
+            router.push('/login')
+        }else{
+            next()
+        }
+    } else {
+        next()
+    }
 })
+
+
+export default router;
