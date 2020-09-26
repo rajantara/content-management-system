@@ -73,13 +73,11 @@ export default {
       e.preventDefault();
       try {
         this.error = "";
-        //check if email or password or email is empty
         if (!this.email || !this.password) {
           this.error = "Password and Email cannot be empty!";
         }
 
         if (!this.error) {
-          //sanitize password and email to eliminate white spaces(use javascript string method String.trim())
           const {
             data: {
               token,
@@ -117,7 +115,6 @@ export default {
     },
   },
 };
-
 </script>
 
 

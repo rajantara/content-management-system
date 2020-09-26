@@ -89,77 +89,83 @@ router.post('/register', function (req, res, next) {
 
 //====================== login
 
-router.post('/login', function (req, res, next) {
-  let {
-    email,
-    password
+router.post('/login', async (req, res, next) => {
 
-  } = req.body;
-  let response = {
-    message: "",
-    data: {},
-    token: ""
+  let response = { data: {}, token: null, message: "" }
+  const { email, password } = req.body
+
+  try {
+    const user = await User.findOne({ email })
+    if (!user) {
+      response.message = 'Email or password wrong!'
+      return res.status(200).json(response)
+    }
+
+    const check = await bcrypt.compare(password, user.password)
+
+    if (check) {
+
+      if (user.token) {
+        response.data.email = email
+        response.message = "login success"
+        response.token = user.token
+        res.status(201).json(response)
+      } else {
+
+        const newToken = jwt.sign({ email }, secret)
+        const updateUser = await User.updateOne({ email: user.email }, { token: newToken })
+        response.data.email = email
+        response.message = "login success"
+        response.token = newToken
+        res.status(201).json(response)
+
+        if (!updateUser) {
+          response.message = "update token failed"
+          return res.status(500).json(response)
+        }
+
+      }
+
+    } else {
+      response.message = 'Email or password wrong!'
+      res.status(200).json(response)
+    }
+  } catch (error) {
+    console.log(error)
+    response.message = "Email or password wrong"
+    res.status(500).json(response)
   }
 
-  User.findOne({ email })
-    .then(data => {
-
-      console.log('data1', data);
-
-      bcrypt.compare(password, data.password)
-        .then(isPasswordTrue => {
-          if (isPasswordTrue) {
-            if (data.token) {
-              response.token = data.token;
-              response.data.email = email;
-              response.data.message = 'login succes dude';
-              res.status(201).json(response)
-            }
-
-          } else {
-            response.message = " authentication failed";
-            res.status(200).json(response);
-          }
-        })
-        .catch(err => {
-          response.message = "Authentication failed dude";
-          res.status(500).json(response);
-        })
-    })
-    .catch(err => {
-      response.message = "email doesn't match dude";
-      res.status(200).json(response);
-    })
 });
-
 
 
 
 //====================== check db
 
-router.post('/check', function (req, res, next) {
-  let token = req.header('token')
+router.post('/check', async (req, res, next) => {
+
+  const token = req.header("Authorization")
+
   let response = {
     valid: false
-  }
-  console.log(token)
+  };
 
-  if (!token) {
+  try {
+    const decoded = jwt.verify(token, secret);
+    if (!decoded) return res.status(200).json(response)
+
+    const user = await User.findOne({ email: decoded.email })
+    if (!user) return res.status(200).json(response)
+
+    response.valid = true
+    res.status(200).json(response)
+
+  } catch (error) {
+    console.log(error);
     res.status(500).json(response)
-  } else {
-    const decode = jwt.verify(token, secret);
-    console.log(decode)
-    User.find({ email: decode.email})
-    .then(result => {
-      response.valid = true
-      res.status(200).json(response)
-
-    })
-    .catch(err => {
-      res.status(500).json({ response})
-    })
   }
-})
+
+});
 
 
 //====================== logout
