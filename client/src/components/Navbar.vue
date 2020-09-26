@@ -47,8 +47,12 @@
           </div>
         </li>
       </ul>
-      <router-link type="submit" v-if="isLoggedIn"
-        @click="handleLogout" to="/" class="btn-login p-2 mb-2">Logout</router-link>
+       <button
+        type="submit"
+        class="btn-login p-2 mb-2"
+        v-if="isLoggedIn"
+        @click="handleLogout"
+      >Logout</button>
     </div>
   </nav>
 </template>
@@ -60,7 +64,7 @@ export default {
   },
   data() {
     return {
-      url: "http://localhost:3000/api/users/logout",
+      url: "http://localhost:3000/api/users/destroy",
     };
   },
   methods: {

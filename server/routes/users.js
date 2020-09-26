@@ -164,30 +164,32 @@ router.post('/check', function (req, res, next) {
 
 //====================== logout
 
-router.get('/logout', function (req, res, next) {
-  let token = req.header('token')
+router.get('/destroy', async (req, res, next) => {
+  const token = req.header("Authorization")
+
   let response = {
     logout: false
-  }
+  };
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, secret);
+      if (!decoded) return res.status(500).json(response)
 
-  if (!token) {
-    res.status(500).json(response);
+      const user = await User.findOneAndUpdate({ email: decoded.email }, { token: undefined })
+      if (!user) return res.status(500).json(response)
+
+      response.logout = true
+      res.status(200).json(response)
+
+    } catch (error) {
+      console.log(error)
+      res.status(200).json(response)
+    }
   } else {
-    const decode = jwt.verify(token, secret)
-    console.log('decode', decode);
-    User.findOneAndUpdate({ email: decode.email}, { token: ""}, { new: true})
-      .then(result => {
-
-        console.log(result)
-
-        response.logout = true
-        res.status(200).json(response)
-      })
-      .catch(err => {
-        res.status(500).json(response)
-      })
+    res.status(500).json(response)
   }
-})
+});
+
 
 
 
