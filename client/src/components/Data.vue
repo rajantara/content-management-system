@@ -1,0 +1,268 @@
+<template>
+  <div>
+    <Navbar :isLoggedIn="isLoggedIn" :whatPage="whatPage"></Navbar>
+    <div class="container-card container">
+      <div class="card-custom card mb-3">
+        <div class="card-header">DATA BREAD</div>
+        <div class="card-body text-dark">
+          <!-- START OF TABLE BOX -->
+          <table class="table table-striped font-weight-bold text-black-50">
+            <thead>
+              <tr>
+                <th scope="col">No</th>
+                <th scope="col">Letter</th>
+                <th scope="col">Frequency</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item,index) of items " :key="item._id">
+                <template v-if="!item.isEdit">
+                  <th scope="row">{{offset+index+1}}</th>
+                  <td>{{item.letter}}</td>
+                  <td>{{item.frequency}}</td>
+                  <td class="d-flex justify-content-center">
+                    <button
+                      type="button"
+                      class="btn-form-delete py-2 mr-2 far fa-trash-alt"
+                      :value="item._id"
+                      @click="handleDelete"
+                    ></button>
+                    <button
+                      type="button"
+                      class="btn-form-edit py-2 fas fa-edit"
+                      :value="item._id"
+                      @click="handleTogleEdit"
+                    ></button>
+                  </td>
+                </template>
+
+                <template v-else>
+                  <th scope="row">{{offset+index+1}}</th>
+                  <td>
+                    <div class="form-row">
+                      <input
+                        id="updateLetter"
+                        type="text"
+                        class="form-control"
+                        :value="item.letter"
+                        required
+                      />
+                    </div>
+                    <p class="error" v-if="errorUpdateLetter.length>0">{{errorUpdateLetter}}</p>
+                  </td>
+                  <td>
+                    <div class="form-row">
+                      <input
+                        id="updateFrequency"
+                        type="text"
+                        class="form-control"
+                        :value="item.frequency"
+                        required
+                      />
+                    </div>
+                    <p class="error" v-if="errorUpdateFrequency.length>0">{{errorUpdateFrequency}}</p>
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="btn-form-save-editmode py-2 mr-2 fas fa-save"
+                      :value="item._id"
+                      @click="handleEdit"
+                    ></button>
+                    <button
+                      type="button"
+                      :value="item._id"
+                      class="btn-form-cancel-editmode py-2 fas fa-times-circle"
+                      @click="handleTogleEdit"
+                    ></button>
+                  </td>
+                </template>
+              </tr>
+            </tbody>
+          </table>
+          <!-- END OF TABLE BOX -->
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+
+import Navbar from "./Navbar.vue";
+
+export default {
+    name: "Data",
+    components: { Navbar },
+    data() {
+        return {
+            whatPage: "data",
+            user: localStorage.getItem("email"),
+            isLoggedIn: true,
+            url: "http://localhost:3000/api/data/",
+        }
+
+    }
+}
+
+</script>
+
+<style scoped>
+.error {
+  color: red;
+}
+.card-custom {
+  background-color: rgba(225, 225, 255, 0.7);
+  box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.6);
+}
+.table {
+  transition: transform 0.2s;
+  background-color: white;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+.table:hover {
+  background-color: white;
+  transform: scale(1.02);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+.flexCustom {
+  transition: transform 0.2s;
+  background-color: rgba(0, 0, 0, 0.6);
+  font-size: 1.5em;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.6);
+}
+.flexCustom:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+  transform: scale(1.02);
+}
+
+.card-header {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.btn-togle-add,
+.btn-togle-cancel {
+  border-radius: 5px;
+  background-color: rgb(50, 137, 219);
+  width: 15%;
+  transition: transform 0.2s;
+  font-size: 1.5em;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.6);
+  font-weight: bold;
+  border: none;
+}
+.btn-togle-cancel {
+  background-color: rgb(192, 145, 17);
+}
+.btn-togle-add:hover,
+.btn-togle-cancel:hover {
+  background-color: coral;
+  transform: scale(1.02);
+  border: none;
+}
+
+.btn-form-delete,
+.btn-form-edit {
+  border-radius: 5px;
+  background-color: rgb(50, 137, 219);
+  width: 2em;
+  transition: transform 0.2s;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.6);
+  font-weight: bold;
+  border: none;
+}
+.btn-form-delete {
+  background-color: rgb(139, 14, 14);
+  color: white;
+}
+.btn-form-edit {
+  background-color: rgb(14, 139, 56);
+  color: white;
+}
+.btn-form-edit:hover {
+  background-color: rgba(14, 139, 56, 0.6);
+  transform: scale(1.02);
+}
+.btn-form-delete:hover {
+  background-color: rgba(139, 14, 14, 0.6);
+  transform: scale(1.02);
+}
+
+.btn-form-save-editmode,
+.btn-form-cancel-editmode {
+  border-radius: 5px;
+  width: 2.5em;
+  transition: transform 0.2s;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.6);
+  font-weight: bold;
+  border: none;
+}
+.btn-form-save-editmode {
+  background-color: rgb(64, 168, 196);
+  color: white;
+}
+.btn-form-cancel-editmode {
+  background-color: rgb(139, 14, 14);
+  color: white;
+}
+.btn-form-cancel-editmode:hover {
+  background-color: rgba(139, 14, 14, 0.6);
+  transform: scale(1.02);
+}
+.btn-form-save-editmode:hover {
+  background-color: rgba(64, 168, 196, 0.6);
+  transform: scale(1.02);
+}
+
+/* 53C08C */
+.container-card {
+  margin-top: 5vh;
+}
+
+a {
+  color: rgb(53, 50, 50);
+}
+a:hover {
+  color: white;
+}
+.form-row {
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+.slide-fade-enter-active {
+  transition: all 0.3s ease;
+}
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

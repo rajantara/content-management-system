@@ -35,6 +35,14 @@ const routes = [
       requiresAuth: true
     }
   },
+  {
+    path: '/data',
+    name: 'Data',
+    component: () => import('../components/Data'),
+    meta: {
+      requiresAuth: true
+    }
+  },
  
 ]
 
