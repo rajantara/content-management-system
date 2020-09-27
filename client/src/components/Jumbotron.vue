@@ -1,8 +1,8 @@
 <template>
     <div class="jumbotron jumbotron-fluid">
       <div class="container">
-        <h1 class="display-3 text-success">Content Management System</h1>
-        <p class="lead text-dark">Manage your data through simple CMS apps.</p>
+        <h1 class="display-3 text-success">𝓒𝓸𝓷𝓽𝓮𝓷𝓽 𝓜𝓪𝓷𝓪𝓰𝓮𝓶𝓮𝓷𝓽 𝓢𝔂𝓼𝓽𝓮𝓶</h1>
+        <p class="lead text-dark">мαηαgє уσυя ∂αтα тняσυgн ѕιмρℓє ¢мѕ αρρѕ.</p>
       </div>
       </div>
 </template>

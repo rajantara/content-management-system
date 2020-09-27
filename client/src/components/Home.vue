@@ -7,7 +7,7 @@
     <div class="container-card container">
       <div class="card mb-3 justify-content-center w-75">
         <div class="card-header">
-          Welcome {{ user }}
+          𝚆𝚎𝚕𝚌𝚘𝚖𝚎 {{ user }}
           <br />
           <span class="lead text-dark-50 font-weight-bolder">Select Feature</span>
         </div>

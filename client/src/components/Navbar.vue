@@ -98,9 +98,9 @@ export default {
 
 <style scoped>
 .btn-login {
-  color: white;
+  color:whitesmoke;
   border-radius: 5px;
-  background-color: black;
+  background-color: rgb(114, 114, 114);
   transition: transform 0.2s;
   font-size: 1.5em;
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.6);
@@ -113,3 +113,7 @@ export default {
   transform: scale(1.02);
 }
 </style>
+
+
+
+  
