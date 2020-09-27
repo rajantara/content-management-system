@@ -22,3 +22,29 @@ router.get('/logout', function (req, res, next) {
         })
     }
   })
+
+
+
+
+  //from datas 
+  router.get('/', function (req, res) {
+    let response = [];
+
+    Data.find({})
+        .then(data => {
+            response = data.map(item => {
+                return {
+                    _id: item._id,
+                    letter: item.letter,
+                    frequency: item.frequency
+                }
+            })
+            res.status(200).json(response)
+        })
+        .catch(err => {
+            res.status(500).json({
+                response
+            })
+        });
+})
+

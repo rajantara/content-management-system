@@ -92,17 +92,75 @@
 import Navbar from "./Navbar.vue";
 
 export default {
-    name: "Data",
-    components: { Navbar },
-    data() {
-        return {
-            whatPage: "data",
-            user: localStorage.getItem("email"),
-            isLoggedIn: true,
-            url: "http://localhost:3000/api/data/",
-        }
+  name: "Data",
+  components: { Navbar },
+  data() {
+    return {
+      whatPage: "data",
+      user: localStorage.getItem("email"),
+      isLoggedIn: true,
+      url: "http://localhost:3000/api/data/",
+      searchLetter: "",
+      searchFrequency: "",
+      errorLetter: "",
+      errorFrequency: "",
+      errorUpdateLetter: "",
+      errorUpdateFrequency: "",
+      errorSearchLetter: "",
+      errorSearchFrequency: "",
+      newLetter: "",
+      newFrequency: "",
+      updateLetter: "",
+      updateFrequency: "",
+      togle: false,
+      items: null,
+      currPage: 1,
+      currPageBrowse: 1,
+      limit: 5,
+      totalPage: null,
+      offset: 0,
+      searchMode: false,
+    };
+  },
+  watch: {
+    searchLetter: function() {
+      this.handleSearch();
+    },
+    searchFrequency: function () {
+      this.handleSearch();
+    },
+  },
+  asyncComputed: {
+    async loadData() {
+      try {
+        if (!this.searchLetter && !this.searchFrequency) {
+          this.searchMode = false;
+         
+          const {
+            data: { data, totalData },
+          } = await this.axios.get(`${this.url}`);
 
-    }
+          this.totalPage = Math.ceil(totalData / this.limit);
+          this.offset = this.limit * this.currPage - this.limit;
+
+          return (this.items = data.map((item) => {
+            item.isEdit = false;
+            return item;
+          }));
+        } else {
+          return this.items;
+        }
+      } catch (error) {
+        console.log(error);
+        this.$swal({
+          title: "Something when wrong!",
+          text: "Please ask administrator to fix the issue",
+          icon: "error",
+          timer: 3000,
+        });
+      }
+    },
+  },
 }
 
 </script>

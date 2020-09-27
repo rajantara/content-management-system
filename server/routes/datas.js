@@ -37,25 +37,32 @@ router.post('/search', function (req, res, next) {
 
 
 //=============GET READ========
-router.get('/', function (req, res) {
-    let response = [];
+router.get("/", async (req, res, next) => {
+    try {
+        let page = Number(req.query.page) || 1
+        let limit = Number(req.query.limit) || 0
+        let offset = page * limit - limit
 
-    Data.find({})
-        .then(data => {
-            response = data.map(item => {
-                return {
-                    _id: item._id,
-                    letter: item.letter,
-                    frequency: item.frequency
-                }
+        const data = await Data.find()
+        const totalData = data.length
+        let response = {
+            totalData,
+            data: []
+        }
+        const paginatedData = await Data.find().limit(limit).skip(offset)
+        paginatedData.forEach(field => {
+            const { _id, letter, frequency } = field
+            response.data.push({
+                _id,
+                letter,
+                frequency
             })
-            res.status(200).json(response)
         })
-        .catch(err => {
-            res.status(500).json({
-                response
-            })
-        });
+        res.status(200).json(response)
+    } catch (error) {
+        console.log(error)
+        res.status(400).json(response)
+    }
 })
 
 
