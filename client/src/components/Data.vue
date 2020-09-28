@@ -161,6 +161,135 @@ export default {
       }
     },
   },
+  methods: {
+    async handleSubmitNewData(e) {
+      e.preventDefault();
+      this.errorLetter = "";
+      this.errorFrequency = "";
+      try {
+        //for validation input or add data
+        if (!this.newFrequency && !this.newLetter) {
+          this.errorLetter = "Input letter cannot empty";
+          this.errorFrequency = "Input Frequency cannot empty";
+        } else if (!this.newLetter) {
+          this.errorLetter = "Input letter cannot empty!";
+        } else if (!this.newFrequency) {
+          this.errorFrequency = "Input Frequency cannot empty!";
+        } else if (!isNaN(this.newLetter) && isNaN(this.newFrequency)) {
+          this.errorLetter = "Input should be string!";
+          this.errorFrequency = "Input should be number!";
+        } else if (!isNaN(this.newLetter)) {
+          this.errorLetter = "Input should be string!";
+        } else if (isNaN(this.newFrequency)) {
+          this.errorFrequency = "Input should be number!";
+        } else {
+          const {
+            data: { message, data },
+          } = await this.axios.post(this.url, {
+            letter: this.newLetter,
+            frequency: this.newFrequency,
+          });
+          this.$swal({
+            icon: "success",
+            title: message,
+            showConfirmButton: false,
+            timer: 1200,
+          });
+
+          this.items.push(data);
+
+          if (!this.searchMode) {
+            if (this.items.length > 5) {
+              if (this.currPage != this.totalPage) {
+                this.currPage = this.totalPage;
+                this.$asyncComputed.loadData.update();
+              } else {
+                this.$asyncComputed.loadData.update();
+              }
+            }
+          } else {
+            if (this.items.length > 5) {
+              if (this.currPageBrowse != this.totalPage) {
+                this.currPageBrowse = this.totalPage;
+                this.handleSearch();
+              } else {
+                this.handleSearch();
+              }
+            }
+          }
+
+          this.newLetter = "";
+          this.newFrequency = "";
+          this.errorLetter = "";
+          this.errorFrequency = "";
+          
+        }
+      } catch (error) {
+        console.log(error)
+         this.$swal({
+          title: "Something when wrong!",
+          text: "Please ask administrator to fix the issue",
+          icon: "error",
+          timer: 3000,
+        });
+      }
+    },
+    async handleDelete(e) {
+      e.preventDefault();
+      const _id = e.target.value;
+
+      try {
+         const confirmationDelete = await this.$swal({
+          title: "Are you sure?",
+          text: "You can't revert this action",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes Delete it!",
+          cancelButtonText: "No, Keep it!",
+          showCloseButton: true,
+          showLoaderOnConfirm: true,
+        });
+        if (confirmationDelete.value) {
+          await this.axios.delete(`${this.url}${_id}`);
+          this.items = this.items.filter((item) => item.id !== _id);
+
+          if (!this.searchMode) {
+            if (this.items.length < 5) {
+              if (this.items.length < 1 && this.currPage != 1) {
+                this.currPage -= 1;
+                this.$asyncComputed.loadData.update();
+              } else {
+                this.$asyncComputed.loadData.update();
+              }
+            }
+          } else {
+            if (this.items.length < 5) {
+              if (this.items.length < 1 && this.currPageBrowse != 1) {
+                this.currPageBrowse -= 1;
+                this.handleSearch();
+              } else {
+                this.handleSearch();
+              }
+            }
+          }
+
+          this.newLetter = "";
+          this.newFrequency = "";
+          this.errorLetter = "";
+          this.errorFrequency = "";
+
+        }
+      } catch (error) {
+        console.log(error);
+        this.$swal({
+          title: "Something when wrong!",
+          text: "Please ask administrator to fix the issue",
+          icon: "error",
+          timer: 3000,
+        });
+      }
+    }
+  }
 }
 
 </script>

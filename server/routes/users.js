@@ -36,7 +36,7 @@ router.get('/', function (req, res) {
 
 
 //====================== register
-router.post('/register', function (req, res, next) {
+router.post('/register', async (req, res, next) => {
   let {
     email,
     password,
@@ -46,7 +46,7 @@ router.post('/register', function (req, res, next) {
   let response = {
     message: "",
     data: {},
-    token: ""
+    token: null,
   }
   if (password != retypepassword) return res.status(500).json({
     error: true,
