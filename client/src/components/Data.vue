@@ -5,6 +5,62 @@
       <div class="card-custom card mb-3">
         <div class="card-header">DATA BREAD</div>
         <div class="card-body text-dark">
+          <!-- START OF ADD BOX -->
+          <transition name="slide-fade">
+            <div class="card-custom card mb-5" v-if="togle">
+              <div class="card-body text-dark">
+                <div>
+                  <div class="card-header mt-2">ADD DATA</div>
+                  <div class="flexCustom d-flex mb-5 flex-row">
+                    <div class="p-3 w-50">
+                      <label for="inputNewLetter" class="text-white font-weight-bold">Letter</label>
+                      <input
+                        class="form-control form-control-lg"
+                        type="text"
+                        placeholder="Add new letter here"
+                        id="inputNewLetter"
+                        v-model="newLetter"
+                        required
+                      />
+                      <p class="error" v-if="errorLetter.length>0">{{errorLetter}}</p>
+                    </div>
+                    <div class="p-3 w-50">
+                      <label for="inputNewFrequency" class="text-white font-weight-bold">Frequency</label>
+                      <input
+                        class="form-control form-control-lg"
+                        type="text"
+                        placeholder="Add new frequency here"
+                        id="inputNewFrequency"
+                        v-model="newFrequency"
+                        required
+                      />
+                      <p class="error" v-if="errorFrequency.length>0">{{errorFrequency}}</p>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="d-flex mt-2 mb-3 text-black-50 flex-row bd-highlight justify-content-center"
+                >
+                  <button
+                    type="button"
+                    class="btn-togle-add p-2 text-white"
+                    @click="handleSubmitNewData"
+                  >
+                    <i class="far fa-plus-square mr-1"></i>Save
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-togle-cancel p-2 ml-2 text-white"
+                    @click="handleTogle"
+                  >
+                    <i class="far fa-times-circle mr-1"></i>Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </transition>
+          <!-- END OF ADD BOX -->
+
           <!-- START OF TABLE BOX -->
           <table class="table table-striped font-weight-bold text-black-50">
             <thead>
@@ -82,6 +138,16 @@
             </tbody>
           </table>
           <!-- END OF TABLE BOX -->
+
+          <!-- START OF BUTTON TOGLE ADD-->
+          <div class="d-flex mt-5 mb-5 text-black-50 flex-row bd-highlight justify-content-center">
+            <button
+              type="button"
+              class="btn-togle-add p-2 mb-2 text-white"
+              @click="handleTogle"
+            >Add Data</button>
+          </div>
+          <!-- END OF BUTTON TOGLE ADD-->
         </div>
       </div>
     </div>
@@ -288,7 +354,87 @@ export default {
           timer: 3000,
         });
       }
-    }
+    },
+    async handleEdit(e) {
+      e.preventDefault();
+      const _id = e.target.value;
+      this.updateLetter = document.querySelector("#updateLetter").value;
+      this.updateFrequency = document.querySelector("#updateFrequency").value;
+
+
+      try {
+        if (!this.updateFrequency && !this.updateLetter) {
+          this.errorUpdateLetter = "Input letter cannot empty!";
+          this.errorUpdateFrequency = "Input Frequency cannot empty!";
+        } else if (!this.updateLetter) {
+          this.errorUpdateLetter = "Input Letter cannot empty!";
+        } else if (!this.updateFrequency) {
+          this.errorUpdateFrequency = "Input Frequency cannot be empty!";
+        } else if (!isNaN(this.updateLetter) && isNaN(this.updateFrequency)) {
+          this.errorUpdateLetter = "Input should be string!";
+          this.errorUpdateFrequency = "input should be number!";
+        } else if (!isNaN(this.updateLetter)) {
+          this.errorUpdateLetter = "Input should be string!";
+        } else if (!isNaN(this.updateFrequency)) {
+          this.errorUpdateFrequency = "Input should be number!";
+        } else {
+          const {
+            data: {message, data},
+          } = await this.axios.put(`${this.url}${_id}`, {
+            letter: this.updateLetter,
+            frequency: this.updateFrequency,
+          });
+
+          this.items = this.items.map((item) => {
+            if (item._id === _id) {
+              item.letter = data.letter;
+              item.frequency = data.frequency;
+              item.isEdit = !item.isEdit;
+            }
+            return item;
+          });
+          this.$swal({
+            icon: "success",
+            title: message,
+            showConfirmButton: false,
+            timer: 1200,
+          });
+          this.errorUpdateLetter = "";
+          this.errorUpdateFrequency = ""
+        }
+      } catch (error) {
+        console.log(error);
+        this.$swal({
+          title: "Something when wrong!",
+          text: "Please ask administrator to fix the issue",
+          icon: "error",
+          timer: 3000,
+        });
+      }
+    },
+    handleTogle() {
+      this.newLetter = "";
+      this.newFrequency = "";
+      this.errorLetter = " ";
+      this.errorFrequency = " ";
+      this.togle = !this.togle;
+    },
+    handleTogleEdit(e) {
+      e.preventDefault();
+      const _id = e.target.value;
+
+      this.updateLetter = "";
+      this.updateFrequency = "";
+
+      this.errorUpdateLetter = " ";
+      this.errorUpdateFrequency = " ";
+      this.items = this.items.map((item) => {
+        if (item._id === _id) {
+          item.isEdit = !item.isEdit;
+        }
+        return item;
+      });
+    },
   }
 }
 
