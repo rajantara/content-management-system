@@ -375,7 +375,7 @@ export default {
           this.errorUpdateFrequency = "input should be number!";
         } else if (!isNaN(this.updateLetter)) {
           this.errorUpdateLetter = "Input should be string!";
-        } else if (!isNaN(this.updateFrequency)) {
+        } else if (isNaN(this.updateFrequency)) {
           this.errorUpdateFrequency = "Input should be number!";
         } else {
           const {
