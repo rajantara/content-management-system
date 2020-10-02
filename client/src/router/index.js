@@ -48,6 +48,11 @@ const routes = [
     name: 'bar',
     component: () => import('../components/Bar')
   },
+  {
+    path: '/pie',
+    name: 'Pie',
+    component: () => import('../components/Pie')
+  },
 ]
 
 const router = new VueRouter({
