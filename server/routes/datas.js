@@ -3,37 +3,43 @@ var router = express.Router();
 var Data = require('../models/data');
 
 //======================BROWSE=============
-router.post('/search', function (req, res, next) {
-    let { letter, frequency } = req.body
-    let reg = new RegExp(letter, 'i');
-    let response = []
-    let filter = {}
+router.post('/search', async (req, res, next) => {
 
-    if (letter && frequency) {
-        filter.letter = { $regex: reg }
-        filter.frequency = frequency
-    } else if (letter) {
-        filter.letter = { $regex: reg }
-    } else if (frequency) {
-        filter.frequency = frequency
-    }
+    try {
+        let page = Number(req.query.page) || 1
+        let limit = Number(req.query.limit) || 0
+        let offset = page * limit - limit
 
-    Data.find(filter)
-        .then(data => {
-            response = data.map(item => {
-                return {
-                    _id: item._id,
-                    letter: item.letter,
-                    frequency: item.frequency
-                }
+        const { letter, frequency } = req.body
+        let filter = { $or: [] }
+        const response = {
+            totalData: 0,
+            data: []
+        }
+        if (letter) filter.$or.push({ letter: new RegExp(letter, "i") })
+        if (frequency) filter.$or.push({ frequency })
+        if (filter.$or.length === 0) {
+            return res.status(200).json(response)
+        }
+        const data = await Data.find(filter)
+        const totalData = data.length
+        const paginatedData = await Data.find(filter).limit(limit).skip(offset)
+
+        response.totalData = totalData
+        paginatedData.forEach(field => {
+            const { _id, letter, frequency } = field
+            response.data.push({
+                _id,
+                letter,
+                frequency
             })
-            res.status(200).json(response)
         })
-        .catch(err => {
-            res.status(401).json(err)
-        })
+        res.status(200).json(response)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json([])
+    }
 });
-
 
 
 //=============GET READ========

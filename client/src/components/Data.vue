@@ -5,6 +5,46 @@
       <div class="card-custom card mb-3">
         <div class="card-header">DATA BREAD</div>
         <div class="card-body text-dark">
+          <!-- START OF SEARCH BOX -->
+          <div>
+            <div class="card-header mt-2">SEARCH DATA</div>
+            <div class="flexCustom d-flex mb-5 flex-row">
+              <div class="p-4 w-50">
+                <label for="inputLetter" class="text-white font-weight-bold">Letter</label>
+                <input
+                  class="form-control form-control-lg"
+                  type="text"
+                  placeholder="Letter"
+                  id="inputLetter"
+                  v-model="searchLetter"
+                  required
+                />
+                <p class="error" v-if="errorSearchLetter.length>0">{{errorSearchLetter}}</p>
+              </div>
+              <div class="p-4 w-50">
+                <label for="inputFrequency" class="text-white font-weight-bold">Frequency</label>
+                <input
+                  class="form-control form-control-lg"
+                  type="text"
+                  placeholder="Frequency"
+                  id="inputFrequency"
+                  v-model="searchFrequency"
+                  required
+                />
+                <p class="error" v-if="errorSearchFrequency.length>0">{{errorSearchFrequency}}</p>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex mb-2 text-black-50 flex-row bd-highlight justify-content-center">
+            <button
+              type="button"
+              class="btn-togle-add p-2 mb-2 text-white"
+              @click="handleReset"
+              v-if="searchMode"
+            >Stop Search</button>
+          </div>
+          <!-- END OF SEARCH BOX -->
+
           <!-- START OF ADD BOX -->
           <transition name="slide-fade">
             <div class="card-custom card mb-5" v-if="togle">
@@ -139,6 +179,86 @@
           </table>
           <!-- END OF TABLE BOX -->
 
+          <!-- START OF PAGINATION -->
+          <div class="mt-5 mb-5 text-black-50">
+            <template v-if="searchMode">
+              <nav aria-label="...">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item">
+                    <button
+                      class="page-link"
+                      aria-label="Previous"
+                      aria-hidden="true"
+                      value="1"
+                      @click="handleFirstNLast"
+                    >&laquo;</button>
+                  </li>
+
+                  <li class="page-item" :class="{disabled:currPageBrowse==1}">
+                    <button class="page-link" @click="handlePrevious">Previous</button>
+                  </li>
+
+                  <li class="page-item disabled">
+                    <span
+                      class="page-link inner-pagination-content"
+                    >Page {{currPageBrowse}} of {{totalPage}}</span>
+                  </li>
+
+                  <li class="page-item" :class="{disabled:currPageBrowse==totalPage}">
+                    <button type="button" class="page-link" @click="handleNext">Next</button>
+                  </li>
+
+                  <li class="page-item">
+                    <button
+                      class="page-link"
+                      aria-label="Next"
+                      aria-hidden="true"
+                      :value="totalPage"
+                      @click="handleFirstNLast"
+                    >&raquo;</button>
+                  </li>
+                </ul>
+              </nav>
+            </template>
+            <template v-else>
+              <nav aria-label="...">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item">
+                    <button
+                      class="page-link"
+                      aria-label="Previous"
+                      aria-hidden="true"
+                      value="1"
+                      @click="handleFirstNLast"
+                    >&laquo;</button>
+                  </li>
+                  <li class="page-item" :class="{disabled:currPage==1}">
+                    <button class="page-link" @click="handlePrevious">Previous</button>
+                  </li>
+
+                  <li class="page-item disabled">
+                    <span
+                      class="page-link inner-pagination-content"
+                    >Page {{currPage}} of {{totalPage}}</span>
+                  </li>
+                  <li class="page-item" :class="{disabled:currPage==totalPage}">
+                    <button type="button" class="page-link" @click="handleNext">Next</button>
+                  </li>
+                  <li class="page-item">
+                    <button
+                      class="page-link"
+                      aria-label="Next"
+                      aria-hidden="true"
+                      :value="totalPage"
+                      @click="handleFirstNLast"
+                    >&raquo;</button>
+                  </li>
+                </ul>
+              </nav>
+            </template>
+          </div>
+          <!-- END OF PAGINATION-->
+
           <!-- START OF BUTTON TOGLE ADD-->
           <div class="d-flex mt-5 mb-5 text-black-50 flex-row bd-highlight justify-content-center">
             <button
@@ -201,10 +321,11 @@ export default {
       try {
         if (!this.searchLetter && !this.searchFrequency) {
           this.searchMode = false;
+          const queryPagination = `?page=${this.currPage}&limit=${this.limit}`;
          
           const {
             data: { data, totalData },
-          } = await this.axios.get(`${this.url}`);
+          } = await this.axios.get(`${this.url}${queryPagination}`);
 
           this.totalPage = Math.ceil(totalData / this.limit);
           this.offset = this.limit * this.currPage - this.limit;
@@ -434,6 +555,88 @@ export default {
         }
         return item;
       });
+    },
+ async handleSearch() {
+      this.searchMode = true;
+      let filter = {};
+
+      if (!this.searchFrequency && !this.searchLetter) {
+        this.errorSearchLetter = "";
+        this.errorSearchFrequency = "";
+        this.searchMode = false;
+        this.currPageBrowse = 1;
+      } else if (this.searchLetter != "" && !isNaN(this.searchLetter)) {
+        this.errorSearchLetter = "Input should be string!";
+      } else if (this.searchFrequency != "" && isNaN(this.searchFrequency)) {
+        this.errorSearchFrequency = "input should be number!";
+      } else {
+        this.errorSearchLetter = "";
+        this.errorSearchFrequency = "";
+        if (this.searchFrequency && this.searchLetter) {
+          filter = {
+            letter: this.searchLetter,
+            frequency: this.searchFrequency,
+          };
+        } else if (this.searchLetter) {
+          filter = { letter: this.searchLetter };
+        } else if (this.searchFrequency) {
+          filter = { frequency: this.searchFrequency };
+        }
+
+        try {
+          const queryPagination = `?page=${this.currPageBrowse}&limit=${this.limit}`;
+
+          const {
+            data: { data, totalData },
+          } = await this.axios.post(
+            `${this.url}search${queryPagination}`,
+            filter
+          );
+
+          this.totalPage = Math.ceil(totalData / this.limit);
+          this.offset = this.limit * this.currPageBrowse - this.limit;
+
+          this.items = [...data];
+        } catch (error) {
+          console.log(error);
+          this.$swal({
+            title: "Something when wrong!",
+            text: "Please ask administrator to fix the issue",
+            icon: "error",
+            timer: 3000,
+          });
+        }
+      }
+    },
+    handleFirstNLast(e) {
+      if (this.searchMode) {
+        this.currPageBrowse = Number(e.target.value);
+        this.handleSearch();
+      } else {
+        this.currPage = Number(e.target.value);
+      }
+    },
+    handlePrevious() {
+      if (this.searchMode) {
+        this.currPageBrowse -= 1;
+        this.handleSearch();
+      } else {
+        this.currPage -= 1;
+      }
+    },
+    handleNext() {
+      if (this.searchMode) {
+        this.currPageBrowse += 1;
+        this.handleSearch();
+      } else {
+        this.currPage += 1;
+      }
+    },
+    handleReset() {
+      this.searchMode = false;
+      this.searchLetter = "";
+      this.searchFrequency = "";
+      this.$asyncComputed.loadData.update();
     },
   }
 }
