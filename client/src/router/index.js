@@ -43,7 +43,11 @@ const routes = [
       requiresAuth: true
     }
   },
- 
+  {
+    path: '/bar',
+    name: 'bar',
+    component: () => import('../components/Bar')
+  },
 ]
 
 const router = new VueRouter({
