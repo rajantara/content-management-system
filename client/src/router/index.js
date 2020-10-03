@@ -61,6 +61,11 @@ const routes = [
       requiresAuth: true
     }
   },
+  {
+    path: '/line',
+    name: 'line',
+    component: () => import('../components/Line')
+  },
 ]
 
 const router = new VueRouter({
