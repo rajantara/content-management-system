@@ -5,6 +5,102 @@
       <div class="card-custom card mb-2">
         <div class="card-header">DATA DATE BREAD</div>
         <div class="card-body text-dark">
+          <!-- START OF SEARCH BOX -->
+          <div>
+            <div class="card-header mt-2">SEARCH DATA DATE</div>
+            <div class="flexCustom d-flex mb-3 flex-row">
+              <div class="p-4 w-50">
+                <label for="inputLetter" class="text-white font-weight-bold">Date</label>
+                <input
+                  class="form-control form-control-lg"
+                  type="date"
+                  placeholder="Letter"
+                  id="inputLetter"
+                  v-model="searchLetter"
+                  required
+                />
+                <p class="error" v-if="errorSearchLetter.length>0">{{errorSearchLetter}}</p>
+              </div>
+              <div class="p-4 w-50">
+                <label for="inputFrequency" class="text-white font-weight-bold">Frequency</label>
+                <input
+                  class="form-control form-control-lg"
+                  type="text"
+                  placeholder="Frequency"
+                  id="inputFrequency"
+                  v-model="searchFrequency"
+                  required
+                />
+                <p class="error" v-if="errorSearchFrequency.length>0">{{errorSearchFrequency}}</p>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex mb-2 text-black-50 flex-row bd-highlight justify-content-center">
+            <button
+              type="button"
+              class="btn-togle-add p-2 mb-2 text-white"
+              @click="handleReset"
+              v-if="searchMode"
+            >Stop Search</button>
+          </div>
+          <!-- END OF SEARCH BOX -->
+
+          <!-- START OF ADD BOX -->
+          <transition name="slide-fade">
+            <div class="card-custom card mb-5" v-if="togle">
+              <div class="card-body text-dark">
+                <div>
+                  <div class="card-header mt-2">ADD DATA</div>
+                  <div class="flexCustom d-flex mb-5 flex-row">
+                    <div class="p-3 w-50">
+                      <label for="inputNewLetter" class="text-white font-weight-bold">Date</label>
+                      <input
+                        class="form-control form-control-lg"
+                        type="date"
+                        placeholder="Add new letter here"
+                        id="inputNewLetter"
+                        v-model="newLetter"
+                        required
+                      />
+                      <p class="error" v-if="errorLetter.length>0">{{errorLetter}}</p>
+                    </div>
+                    <div class="p-3 w-50">
+                      <label for="inputNewFrequency" class="text-white font-weight-bold">Frequency</label>
+                      <input
+                        class="form-control form-control-lg"
+                        type="text"
+                        placeholder="Add new frequency here"
+                        id="inputNewFrequency"
+                        v-model="newFrequency"
+                        required
+                      />
+                      <p class="error" v-if="errorFrequency.length>0">{{errorFrequency}}</p>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="d-flex mt-2 mb-3 text-black-50 flex-row bd-highlight justify-content-center"
+                >
+                  <button
+                    type="button"
+                    class="btn-togle-add p-2 text-white"
+                    @click="handleSubmitNewData"
+                  >
+                    <i class="far fa-plus-square mr-1"></i>Save
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-togle-cancel p-2 ml-2 text-white"
+                    @click="handleTogle"
+                  >
+                    <i class="far fa-times-circle mr-1"></i>Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </transition>
+          <!-- END OF SEARCH BOX -->
+
           <!-- START OF TABLE BOX -->
           <table class="table table-striped font-weight-bold text-black-50">
             <thead>
@@ -82,6 +178,99 @@
             </tbody>
           </table>
           <!-- END OF TABLE BOX -->
+
+          <!-- START OF PAGINATION  -->
+          <div class="mt-5 mb-5 text-black-50">
+            <template v-if="searchMode">
+              <nav aria-label="...">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item">
+                    <button
+                      class="page-link"
+                      aria-label="Previous"
+                      aria-hidden="true"
+                      value="1"
+                      @click="handleFirstNLast"
+                    >&laquo;</button>
+                  </li>
+                  <li class="page-item" :class="{disabled:currPageBrowse==1}">
+                    <button class="page-link" @click="handlePrevious">Previous</button>
+                  </li>
+
+                  <li class="page-item disabled">
+                    <span
+                      class="page-link inner-pagination-content"
+                    >Page {{currPageBrowse}} of {{totalPage}}</span>
+                  </li>
+
+                  <li class="page-item" :class="{disabled:currPageBrowse==totalPage}">
+                    <button type="button" class="page-link" @click="handleNext">Next</button>
+                  </li>
+                  <li class="page-item">
+                    <button
+                      class="page-link"
+                      aria-label="Next"
+                      aria-hidden="true"
+                      :value="totalPage"
+                      @click="handleFirstNLast"
+                    >&raquo;</button>
+                  </li>
+                </ul>
+              </nav>
+            </template>
+
+            <template v-else>
+              <nav aria-label="...">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item">
+                    <button
+                      class="page-link"
+                      aria-label="Previous"
+                      aria-hidden="true"
+                      value="1"
+                      @click="handleFirstNLast"
+                    >&laquo;</button>
+                  </li>
+
+                  <li class="page-item" :class="{disabled:currPage==1}">
+                    <button class="page-link" @click="handlePrevious">Previous</button>
+                  </li>
+
+                  <li class="page-item disabled">
+                    <span
+                      class="page-link inner-pagination-content"
+                    >Page {{currPage}} of {{totalPage}}</span>
+                  </li>
+
+                  <li class="page-item" :class="{disabled:currPage==totalPage}">
+                    <button type="button" class="page-link" @click="handleNext">Next</button>
+                  </li>
+
+                  <li class="page-item">
+                    <button
+                      class="page-link"
+                      aria-label="Next"
+                      aria-hidden="true"
+                      :value="totalPage"
+                      @click="handleFirstNLast"
+                    >&raquo;</button>
+                  </li>
+                </ul>
+              </nav>
+            </template>
+          </div>
+          <!-- END OF PAGINATION -->
+
+          <!-- START OF BUTTON TOGLE ADD-->
+          <div class="d-flex mt-5 mb-2 text-black-50 flex-row bd-highlight justify-content-center">
+            <button
+              type="button"
+              class="btn-togle-add p-2 mb-2 text-white"
+              @click="handleTogle"
+            >Add Data</button>
+          </div>
+          <!-- END OF BUTTON TOGLE ADD -->
+
         </div>
       </div>
     </div>
@@ -168,7 +357,7 @@ export default {
            this.errorFrequency = "";
 
            try {
-               //validation input
+               //validation input data 
 
                if (!this.newFrequency && !this.newLetter) {
                    this.errorLetter = "Input Date cannot empty!";
@@ -186,7 +375,7 @@ export default {
                         letter: this.newLetter,
                         frequency: this.newFrequency
                     });
-                    this.$$swal({
+                    this.$swal({
                         icon: "success",
                         title: message,
                         showConfirmButton: false,
@@ -232,9 +421,218 @@ export default {
                     timer: 3000,
                 })
             }
-        } 
-    }
+        },
+        async handleDelete(e) {
+            e.preventDefault();
+            const _id = e.target.value;
 
+            try {
+                const confirmationDelete = await this.$swal({
+                    title: "Are you sure?",
+                    text: "You can't revert this action",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes Delete it!",
+                    cancelButtonText: "No, keep it!",
+                    showCloseButton: true,
+                    showLoaderOnConfrim: true,
+                });
+                if (confirmationDelete.value) {
+                    await this.axios.delete(`${this.url}${_id}`);
+                    this.items = this.items.filter((item => item._id !== _id));
+
+                    if (!this.searchMode) {
+                        if (this.items.length < 5) {
+                            if (this.items.length < 1 && this.currPage != 1) {
+                                this.currPage -= 1;
+                                this.$asyncComputed.loadData.update();
+                            } else {
+                                this.$asyncComputed.loadData.update();
+                            }
+                        }
+                    } else {
+                        if (this.items.length < 5) {
+                            if (this.items.length < 1 && this.currPageBrowse != 1) {
+                                this.currPageBrowse -= 1;
+                                this.handleSearch();
+                            } else {
+                                this.handleSearch();
+                            }
+                        }
+                    }
+
+                    this.newLetter = "";
+                    this.newFrequency = "";
+                    this.errorLetter = "";
+                    this.errorFrequency = "";
+                }
+            } catch (error) {
+                console.log(error);
+                this.$swal({
+                    title: "Something when wrong!",
+                    text: "Please ask administrator to fix the issue",
+                    icon: "error",
+                    timer: 3000,
+                })
+            }
+        },
+        async handleEdit(e) {
+            e.preventDefault();
+            const _id = e.target.value;
+            this.updateLetter = document.querySelector("#updateLetter").value;
+            this.updateFrequency = document.querySelector("#updateFrequency").value;
+
+            try {
+                if (!this.updateFrequency && !this.updateLetter) {
+                    this.errorUpdateLetter = "Input letter cannot empty!";
+                    this.errorUpdateFrequency = "Input Frequency cannot be empty!";
+                } else if (!this.updateLetter) {
+                    this.errorUpdateLetter ="Input letter cannot empty!";
+                } else if (!this.updateFrequency) {
+                    this.errorUpdateFrequency = "Input Frequency cannot empty!";
+                } else if (isNaN(this.updateFrequency)) {
+                    this.errorUpdateFrequency = "input should be number!";
+                } else {
+                    const {
+                        data: { message, data },
+                    } = await this.axios.put(`${this.url}${_id}`, {
+                        letter: this.updateLetter,
+                        frequency: this.updateFrequency,
+                    });
+
+                    this.items = this.items.map((item) => {
+                        if (item._id === _id) {
+                            item.letter = data.letter;
+                            item.frequency = data.frequency;
+                            item.isEdit = !item.isEdit;
+                        }
+                        return item;
+                    });
+                    this.$swal({
+                        icon: "success",
+                        title: message,
+                        showConfirmButton: false,
+                        timer: 1200,
+                    });
+                    this.errorUpdateLetter = "";
+                    this.errorFrequency = "";
+                }
+            } catch (error) {
+                console.log(error);
+                this.$swal({
+                    title: "Something when wrong!",
+                    text: "Please ask administrator to fix the issue",
+                    icon: "error",
+                    timer: 3000,
+                });
+            }
+
+        },
+        handleTogle() {
+            this.newLetter = "";
+            this.newFrequency = "";
+            this.errorLetter = " ";
+            this.errorFrequency = " ";
+            this.togle = !this.togle;
+        },
+        handleTogleEdit(e) {
+            e.preventDefault();
+            const _id = e.target.value;
+
+            this.updateLetter = "";
+            this.updateFrequency = "",
+
+            this.errorUpdateLetter = " ";
+            this.errorUpdateFrequency = " ";
+            this.items = this.items.map((item) => {
+                if (item._id === _id) {
+                    item.isEdit = !item.isEdit;
+                }
+                return item
+            });
+        },
+        async handleSearch() {
+            this.searchMode = true;
+            let filter = {};
+
+            if (!this.searchFrequency && !this.searchLetter) {
+                this.errorSearchLetter = "";
+                this.errorSearchFrequency = "";
+                this.searchMode = false;
+                this.currPageBrowse = 1;
+            } else if (this.searchFrequency != "" && isNaN(this.searchFrequency)) {
+                this.errorSearchFrequency = "input should be number!";
+            } else {
+                this.errorSearchLetter = "";
+                this.errorSearchFrequency = "";
+                if (this.searchFrequency && this.searchLetter) {
+                    filter = {
+                        letter: this.searchLetter,
+                        frequency: this.searchFrequency,
+                    };
+                } else if (this.searchLetter) {
+                    filter = { letter: this.searchLetter };
+                } else if (this.searchFrequency) {
+                    filter = { frequency: this.searchFrequency }
+                }
+
+                try{
+                    const queryPagination = `?page=${this.currPageBrowse}&limit=${this.limit}`;
+
+                    const {
+                        data: { data, totalData },
+                    } = await this.axios.post(
+                        `${this.url}search${queryPagination}`,
+                        filter
+                    );
+
+                    this.totalPage = Math.ceil(totalData / this.limit);
+                    this.offset = this.limit * this.currPageBrowse - this.limit;
+
+                    this.items = [...data];
+                } catch (error) {
+                    console.log(error);
+                    this.$swal({
+                        title: "Something when wrong!",
+                        text: "Please ask administrator to fix the issue",
+                        icon: "error",
+                        timer: 3000,
+                    });
+                }
+            }
+        },
+        handleFirstNLast(e) {
+            if (this.searchMode) {
+                this.currPageBrowse = Number(e.target.value);
+                this.handleSearch();
+            } else {
+                this.currPage = Number(e.target.value);
+            }
+        },
+        handlePrevious() {
+            if (this.searchMode) {
+                this.currPageBrowse += 1;
+                this.handleSearch();
+            } else {
+                this.currPage += 1;
+            }
+        },
+        handleNext() {
+            if (this.searchMode) {
+                this.currPageBrowse -= 1;
+                this.handleSearch();
+            } else {
+                this.currPage -= 1;
+            }
+
+        },
+        handleReset() {
+            this.searchMode = false;
+            this.searchLetter = "";
+            this.searchFrequency = "";
+            this.$asyncComputed.loadData.update();
+        }
+    }
 }
 
 </script>
