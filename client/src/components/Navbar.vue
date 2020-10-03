@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
-    <router-link to="/" class="navbar-brand text-black-50">CMS</router-link>
+    <router-link to="/" class="navbar-brand text-black-50">Content Management System</router-link>
     <button
       class="navbar-toggler"
       type="button"

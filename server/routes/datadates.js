@@ -1,6 +1,7 @@
+const { response } = require('express');
 var express = require('express');
 var router = express.Router();
-const DataDate = require('../models/datadate');
+const Data = require('../models/datadate')
 
 
 //========ADD=======
@@ -33,25 +34,35 @@ router.post('/', function (req, res, next) {
 });
 
 // =======READ=======
-router.get('/', function (req, res, next) {
-    let response = []
+router.get("/", async (req, res, next) => {
+    let page = Number(req.query.page) || 1
+    let limit = Number(req.query.limit) || 0
+    let offset = page * limit - limit
 
-    DataDate.find()
-        .then(data => {
-            response = data.map(item => {
-                return {
-                    _id: item._id,
-                    letter: item.letter,
-                    frequency: item.frequency
-                }
-
+    try {
+        const data = await Data.find()
+        const totalData = data.length
+        let response = {
+            totalData,
+            data: []
+        }
+        const paginatedData = await Data.find().limit(limit).skip(offset)
+        paginatedData.forEach(field => {
+            const { _id, letter, frequency } = field
+            response.data.push({
+                _id,
+                letter,
+                frequency
             })
-            res.status(200).json(response)
         })
-        .catch(err => {
-            res.status(500).json(err)
-        })
-});
+
+        res.status(200).json(response)
+    } catch (error) {
+        console.log(error)
+        res.status(400).json(response)
+    }
+})
+
 
 //====BROWSE====
 router.post('/search', function (req, res, next) {

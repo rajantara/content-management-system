@@ -53,6 +53,14 @@ const routes = [
     name: 'Pie',
     component: () => import('../components/Pie')
   },
+  {
+    path: '/dataDate',
+    name: 'data date',
+    component: () => import('../components/DataDate'),
+    meta: {
+      requiresAuth: true
+    }
+  },
 ]
 
 const router = new VueRouter({
@@ -88,7 +96,6 @@ router.beforeEach(async (to, from, next) => {
       } catch (error) {
         console.log(error)
       }
-      //seting up req.headers with axios need to pass object req.body as 2nd parameter and object headers as 3th parameter, if you forget to put second parameter, server will send response error!
 
     } else {
       router.push('/')
