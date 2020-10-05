@@ -2,158 +2,175 @@ var express = require('express');
 var router = express.Router();
 var Maps = require('../models/maps');
 
+
+let response = {
+    success: false,
+    message: "",
+    data: {}
+}
+
 //==============ADD==================
-router.post('/', function (req, res, next) {
-    let response = {
-        success: false,
-        massage: "",
-        data: {}
+router.post('/', async (req, res, next) => {
+    try {
+        const { title, lat, lng } = req.body
+        const map = new Maps({
+            title,
+            lat,
+            lng
+        })
+        const savedData = await map.save()
+
+        response.success = true
+        response.message = "data have been added"
+        response.data = {
+            _id: savedData._id,
+            title,
+            lat,
+            lng
+        }
+        res.status(201).json(response)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(response)
     }
 
-    Maps.create({
-        title: req.body.title,
-        lat: req.body.lat,
-        lng: req.body.lng
-    }).then(data =>{
-       response.success = true
-       response.massage = "data have been added dude"
-       response.data._id = data.id
-       response.data.title = data.title
-       response.data.lat = data.lat
-       response.data.lng = data.lng
-       res.status(201).json(response)
-    }).catch(err =>{
-        res.status(500).json({
-            response
-        })
-    })
-})
+});
 
 // =======READ=======
-router.get('/', function (req, res, next) {
-    let response = []
+router.get("/", async (req, res, next) => {
+    try {
+        let page = Number(req.query.page) || 1
+        let limit = Number(req.query.limit) || 0
+        let offset = page * limit - limit
 
-    Maps.find()
-        .then(data => {
-            // console.log(data)
-            response = data.map(item => {
-                return {
-                    _id: item._id,
-                    title: item.title,
-                    lat: item.lat,
-                    lng: item.lng
-                }
+        const data = await Maps.find()
+        const totalData = data.length
+
+        let response = {
+            totalData,
+            data: []
+        }
+
+        const paginatedData = await Maps.find().limit(limit).skip(offset)
+        paginatedData.map(field => {
+            const { _id, title, lat, lng } = field
+            response.data.push({
+                _id,
+                title,
+                lat,
+                lng
             })
-            res.status(200).json(response)
         })
-        .catch(err => {
-            res.status(500).json(err)
-        })
-});
+        res.status(200).json(response)
+    } catch (error) {
+        console.log(error)
+        res.status(400).json(response)
+    }
+})
 
 //======EDIT======
-router.put('/:id', function (req, res, next) {
-    let id = req.params.id
-    let { title, lat, lng } = req.body
-    let response = {
-        success: false,
-        message: "",
-        data: {}
-    }
+router.put("/:id", async (req, res, next) => {
+    try {
+        const { title, lat, lng } = req.body
+        const _id = req.params.id
+        const map = await Maps.findByIdAndUpdate(
+            _id,
+            { title, lat, lng },
+            { new: true }
+        )
 
-    Maps.findByIdAndUpdate(id, { title, lat, lng }, { new: true })
-        .then(data => {
-            response.success = true
-            response.message = "data have been updated"
-            response.data._id = data._id
-            response.data.title = data.title
-            response.data.lat = data.lat
-            response.data.lng = data.lng
-            res.status(201).json(response)
-        })
-        .catch(err => {
-            response.message = "update failed"
-            res.status(500).json(response)
-        })
-});
+        if (!map) return res.status(500).json(response)
+
+        response.success = true
+        response.message = "data have been updated"
+        response.data = { _id, title, lat, lng }
+
+        res.status(201).json(response)
+    } catch (error) {
+        console.log(error)
+        res.status(400).json(response)
+    }
+})
 
 //=======DELETE========
-router.delete('/:id', function (req, res, next) {
-    let id = req.params.id
-    let response = {
-        success: false,
-        message: "",
-        data: {}
+router.delete("/:id", async (req, res, next) => {
+    try {
+        const _id = req.params.id
+        const map = await Maps.findByIdAndRemove(_id)
+        if (!map) return res.status(500).json(response)
+        const { title, lat, lng } = map
+
+        response.success = true
+        response.message = "data have been deleted"
+        response.data = { _id, title, lat, lng }
+
+        res.status(200).json(response)
+    } catch (error) {
+        console.log(error)
+        res.status(400).json(response)
     }
 
-    Maps.findByIdAndRemove(id)
-        .then(data => {
-            response.success = true
-            response.message = "data have been deleted"
-            response.data._id = data._id
-            response.data.title = data.title
-            response.data.lat = data.lat
-            response.data.lng = data.lng
-            res.status(201).json(response)
-        })
-        .catch(err => {
-            response.message = "delete failed"
-            res.status(500).json(response)
-        })
-});
+})
 
 //==========FIND=========
-router.get('/:id', function (req, res, next) {
-    let id = req.params.id
-    let response = {
-        success: false,
-        message: "",
-        data: {}
+router.get("/:id", async (req, res, next) => {
+  
+    try {
+        const _id = req.params.id
+        const map = await Maps.findOne({ _id })
+        if (!map) return res.status(400).json(response)
+        const { title, lat, lng } = map
+
+        response.success = true
+        response.message = "data found"
+        response.data = { _id, title, lat, lng }
+        
+        res.status(200).json(response)
+    } catch (error) {
+        console.log(error)
+        res.status(400).json(response)
     }
 
-    Maps.findById(id)
-        .then(data => {
-            response.success = true
-            response.message = "data found"
-            response.data._id = data._id
-            response.data.title = data.title
-            response.data.lat = data.lat
-            response.data.lng = data.lng
-            res.status(200).json(response)
-        })
-        .catch(err => {
-            response.message = "data not found"
-            res.status(500).json(response)
-        })
-
-
-});
+})
 
 //====BROWSE====
-router.post('/search', function (req, res, next) {
-    let reg = new RegExp(req.body.title, 'i');
-    let response = []
-    let filter = {}
+router.post('/search', async (req, res, next) => {
+    try {
+        let page = Number(req.query.page) || 1
+        let limit = Number(req.query.limit) || 0
+        let offset = page * limit - limit
 
-    if (req.body.title) {
-        filter.title = { $regex: reg }
-    }
+        const { title } = req.body
+        let filter = {}
+        const response = {
+            totalData: 0,
+            data: []
+        }
 
-    Maps.find(filter)
-        .then(data => {
-            response = data.map(item => {
-                return {
-                    _id: item._id,
-                    title: item.title,
-                    lat: item.lat,
-                    lng: item.lng
-                }
+        if (!title) return res.status(200).json(response)
+        if (title) filter.title = new RegExp(title, "i")
+
+        const data = await Maps.find(filter)
+        const totalData = data.length
+        const paginatedData = await Maps.find(filter).limit(limit).skip(offset)
+
+        response.totalData = totalData
+        paginatedData.forEach(field => {
+            const { _id, title, lat, lng } = field
+            response.data.push({
+                _id,
+                title,
+                lat,
+                lng
             })
-            res.status(200).json(response)
         })
-        .catch(err => {
-            res.status(401).json(err)
-        })
+
+        res.status(200).json(response)
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json([])
+    }
 
 });
 

@@ -66,6 +66,19 @@ const routes = [
     name: 'line',
     component: () => import('../components/Line')
   },
+  {
+    path: '/maps',
+    name: 'data map',
+    component: () => import('../components/DataMap'),
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/map',
+    name: 'map',
+    component: () => import('../components/Map')
+  },
 ]
 
 const router = new VueRouter({
