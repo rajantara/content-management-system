@@ -7,7 +7,7 @@
         <div class="card-header">MAPS</div>
         <div class="card-body text-dark p-5">
           <GChart
-            :settings="{packages: ['corechart','map'], mapsApiKey:'AIzaSyDemSB1MKHpdMDcMFXbqr9F1CJDVDo8UTE'}"
+            :settings="{packages: ['corechart','map'], mapsApiKey:'AIzaSyCpsSPBs9ZrwMMNp5NGh7WjpFPsS9tQJCs'}"
             type="Map"
             :data="chartData"
             :options="chartOptions"
